@@ -1,17 +1,17 @@
 import React from 'react'
 import { HashRouter, Switch, Route } from 'react-router-dom'
 
-import Estoque from '../pages/Estoque'
+import Inicio from '../pages/Inicio'
 import Items from '../pages/Items'
-import Locacao from '../pages/Locacao'
+import Locacaos from '../pages/Locacaos'
 
 export default function Rotas(){
     return (
         <HashRouter>
             <Switch>
-                <Route exact path="/" component={Estoque} />
+                <Route exact path="/" component={Inicio} />
                 <Route exact path="/items" component={Items} />
-                <Route exact path="/Locacao" component={Locacao} />
+                <Route exact path="/locacaos" component={Locacaos} />
             </Switch>
         </HashRouter>
     )

@@ -16,11 +16,95 @@ import { BACKEND } from '../constants'
 import { MdRestaurantMenu, MdWeb, MdSave, MdModeEdit, MdDelete, MdCancel } from 'react-icons/md'
 
 const Items = () => {
-    const valorInicial = { x: '', descricao: '', quantidade: '', locacao: ''}
+    const valorInicial = { x: '', descricao: '', quantidade: '', locacao: '' }
 
     const [item, setItem] = useState(valorInicial)
     const [items, setItems] = useState([])
+    const [carregandoItems, setCarregandoItems] = useState(false)
+    const [salvandoItems, setSalvandoItems] = useState(valorInicial)
+    const [confirmaExclusao, setConfirmaExclusao] = useState(false)
+
+    const [aviso, setAviso] = useState('')
+    const [erros, setErros] = useState({})
+    const { x, descricao, quantidade, locacao } = item
+
+    async function obterItems() {
+        setCarregandoItems(true) //Só para carregar a bolinha de loading
+        let url = `${BACKEND}/items`
+        await fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setItems(data)
+                console.log(data)
+            })
+            .catch(function (error) {
+                console.error(`Erro ao obter os itens: ${error.message}`)
+            })
+        setCarregandoItems(false)
+    }
+    useEffect(() => {
+        document.title = 'LocaInfra - Items'
+        obterCategorias()
+    }, [])
+    
+    const alteraDadosItem = e => {
+        setItem({ ...item, [e.target.name]: e.target.value })
+        setErros({})
+    }
+
+    async function salvarItem(e) {
+        e.preventDefault() // evita que a página seja recarregada  
+        const novosErros = validaErrosItem()
+        //Existe algum erro no array?
+        if (Object.keys(novosErros).length > 0) {
+            //Sim, temos erros!
+            setErros(novosErros)
+        } else {
+            const metodo = item.hasOwnProperty('_id') ? 'PUT' : 'POST'
+            item.status = (item.status === true || categoria.status === 'ativo') ? 'ativo' : 'inativo'
+            setSalvandoCategorias(true)
+            let url = `${BACKEND}/categorias`
+            await fetch(url, {
+                method: metodo,
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(categoria)
+            }).then(response => response.json())
+                .then(data => {
+                    (data._id || data.message) ? setAviso('Registro salvo com sucesso') : setAviso('')
+                    setCategoria(valorInicial) //limpa a tela
+                    obterCategorias()
+                }).catch(function (error) {
+                    console.error(`Erro ao salvar a categoria: ${error.message}`)
+                })
+            setSalvandoCategorias(false)
+        }
+    }
+
+    async function excluirCategoria() {
+        let url = `${BACKEND}/categorias/${categoria._id}`
+        await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json())
+            .then(data => {
+                data.message ? setAviso(data.message) : setAviso('')
+                setCategoria(valorInicial)
+                obterCategorias()
+            })
+            .catch(function (error) {
+                console.error(`Erro ao excluir a categoria: ${error.message}`)
+            })
+    }
+
 }
+
+
 
 
 const Categorias = () => {
@@ -164,8 +248,8 @@ const Categorias = () => {
                             </Button>
                             &nbsp;
                             <Button variant="danger" type="button" title="Cancelar"
-                            onClick={()=> setCategoria(valorInicial)}>
-                                <MdCancel/> Cancelar
+                                onClick={() => setCategoria(valorInicial)}>
+                                <MdCancel /> Cancelar
                             </Button>
                         </Form>
                     </Col>

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import Row from 'react-bootstrap/Row'
 import Container from 'react-bootstrap/Container'
 import Jumbotron from 'react-bootstrap/Jumbotron'
 
@@ -8,21 +9,23 @@ import Rodape from '../components/Rodape'
 const Inicio = () => {
 
     useEffect(() => {
-        document.title = 'iComida'
+        document.title = 'LocaInfra - Início'
     }, [])
 
     return (
         <>
             <Container fluid className="p-0">
                 <Cabecalho />
-                <Jumbotron>
-                    <h1>Seja Bem Vindo!</h1>
-                    <p>
-                        Esta é a área administrativa do iComida. Efetue os cadastros através 
-                        do menu acima.
-                    </p>
-                   
-                </Jumbotron>
+                <Row className="justify-content-md-center">
+
+                    <Jumbotron className="">
+                        <h1>Olá</h1>
+                        <p>
+                            Esse é um software desenvolvido para controle de estoque de materias em locações.
+                        </p>
+
+                    </Jumbotron>
+                </Row>
                 <Rodape />
             </Container>
         </>

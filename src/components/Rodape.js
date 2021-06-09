@@ -3,9 +3,9 @@ import Navbar from 'react-bootstrap/Navbar'
 
 const Rodape = () => {
     return (
-<Navbar bg="dark" fixed="bottom">
-    <Navbar.Brand href="#inicio" className="text-light">
-        <MdLocalPizza/> LocaInfra &tm; - Todos os direitos reservados
+<Navbar bg="warning" fixed="bottom">
+    <Navbar.Brand href="#" className="text-dark">
+        &nbsp;LocaInfra™  - Todos os direitos reservados
     </Navbar.Brand>
 </Navbar>
     )
