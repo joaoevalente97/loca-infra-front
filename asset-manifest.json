@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.js": "/loca-infra-front/static/js/main.a5724d32.chunk.js",
+    "main.js.map": "/loca-infra-front/static/js/main.a5724d32.chunk.js.map",
+    "runtime-main.js": "/loca-infra-front/static/js/runtime-main.598bf422.js",
+    "runtime-main.js.map": "/loca-infra-front/static/js/runtime-main.598bf422.js.map",
+    "static/css/2.15a7a700.chunk.css": "/loca-infra-front/static/css/2.15a7a700.chunk.css",
+    "static/js/2.4894908e.chunk.js": "/loca-infra-front/static/js/2.4894908e.chunk.js",
+    "static/js/2.4894908e.chunk.js.map": "/loca-infra-front/static/js/2.4894908e.chunk.js.map",
+    "index.html": "/loca-infra-front/index.html",
+    "static/css/2.15a7a700.chunk.css.map": "/loca-infra-front/static/css/2.15a7a700.chunk.css.map",
+    "static/js/2.4894908e.chunk.js.LICENSE.txt": "/loca-infra-front/static/js/2.4894908e.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.598bf422.js",
+    "static/css/2.15a7a700.chunk.css",
+    "static/js/2.4894908e.chunk.js",
+    "static/js/main.a5724d32.chunk.js"
+  ]
+}
