@@ -1,4 +1,4 @@
-export const BACKEND = "https://loca-infra-back.herokuapp.com/"
+export const BACKEND = "https://loca-infra-back.herokuapp.com"
 
 const config = { BACKEND }
 
