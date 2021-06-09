@@ -2,35 +2,34 @@ import React, { useEffect, useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Spinner from 'react-bootstrap/Spinner'
 import Table from 'react-bootstrap/Table'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Toast from 'react-bootstrap/Toast'
-
 import Cabecalho from '../components/Cabecalho'
 import Rodape from '../components/Rodape'
 import { BACKEND } from '../constants'
-
-import { MdModeEdit, MdDelete, MdAssignmentTurnedIn } from 'react-icons/md'
+import { MdModeEdit, MdDelete } from 'react-icons/md'
 import { FormControl } from 'react-bootstrap'
 
 const Items = () => {
     const valorInicial = { x: '', descricao: '', quantidade: '', locacao: '' }
-
     const [item, setItem] = useState(valorInicial)
     const [items, setItems] = useState([])
-    const [carregandoItems, setCarregandoItems] = useState(false)
+    const [confirmaEdicao, setConfirmaEdicao] = useState(false)
     const [confirmaExclusao, setConfirmaExclusao] = useState(false)
     const [erros, setErros] = useState({})
-    
-
+    const [aviso, setAviso] = useState('')
     const { x, descricao, quantidade, locacao } = item
 
-    //Funções
+    //FUNÇÕES
+    useEffect(() => {
+        document.title = 'LocaInfra - Items'
+        obterItems()
+    }, [])
+
     async function obterItems() {
-        setCarregandoItems(true) //Só para carregar a bolinha de loading
         let url = `${BACKEND}/items`
         await fetch(url)
             .then(response => response.json())
@@ -41,37 +40,52 @@ const Items = () => {
             .catch(function (error) {
                 console.error(`Erro ao obter os itens: ${error.message}`)
             })
-        setCarregandoItems(false)
     }
-
-    useEffect(() => {
-        document.title = 'LocaInfra - Items'
-        obterItems()
-    }, [])
 
     const alteraDadosItem = e => {
         setItem({ ...item, [e.target.name]: e.target.value })
         setErros({})
     }
 
-    const editaItem = (edit, item) => {
-        if (edit) {
-            document.getElementById(`${item._id}x`).removeAttribute('readonly')
-            document.getElementById(`${item._id}descricao`).removeAttribute('readonly')
-            document.getElementById(`${item._id}quantidade`).removeAttribute('readonly')
-            document.getElementById(`${item._id}locacao`).removeAttribute('readonly')
-            document.getElementById(`${item._id}edit`).setAttribute('hidden', true)
-            document.getElementById(`${item._id}save`).removeAttribute('hidden')
-        }else{
-            document.getElementById(`${item._id}x`).setAttribute('readonly', true)
-            document.getElementById(`${item._id}descricao`).setAttribute('readonly', true)
-            document.getElementById(`${item._id}quantidade`).setAttribute('readonly', true)
-            document.getElementById(`${item._id}locacao`).setAttribute('readonly', true)
-            document.getElementById(`${item._id}edit`).removeAttribute('hidden')
-            document.getElementById(`${item._id}save`).setAttribute('hidden', true)
-        }
+    async function salvarItem(e) {
+        e.preventDefault() // evita que a página seja recarregada
+        const metodo = item.hasOwnProperty('_id') ? 'PUT' : 'POST'
+        let url = `${BACKEND}/items`
+        await fetch(url, {
+            method: metodo,
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(item)
+        }).then(response => response.json())
+            .then(data => {
+                (data._id || data.message) ? setAviso('Registro salvo com sucesso') : setAviso('')
+                setItem(valorInicial) //limpa os campos
+                obterItems()
+            }).catch(function (error) {
+                console.error(`Erro ao salvar a item: ${error.message}`)
+            })
     }
 
+    async function excluirItem() {
+        let url = `${BACKEND}/items/${item._id}`
+        await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json())
+            .then(data => {
+                data.message ? setAviso(data.message) : setAviso('')
+                setItem(valorInicial)
+                obterItems()
+            })
+            .catch(function (error) {
+                console.error(`Erro ao excluir a item: ${error.message}`)
+            })
+    }
 
     return (
         <Container fluid className="p-0">
@@ -90,53 +104,26 @@ const Items = () => {
                     {items.map(item => (
                         <tr key={item._id}>
                             <td className="col-1">
-                                <Form.Control id={`${item._id}x`}
-                                    name="1"
-                                    onChange={alteraDadosItem}
-                                    value={item.x}
-                                    isInvalid={!!erros.x}
-                                    readOnly
-                                    onChange={event => setItem(event.target.value)}
-                                />
+                                {item.x}
                             </td>
                             <td>
-                                <Form.Control id={`${item._id}descricao`}
-                                    name="descricao"
-                                    onChange={alteraDadosItem}
-                                    value={item.descricao}
-                                    isInvalid={!!erros.descricao}
-                                    readOnly
-                                />
+                                {item.descricao}
                             </td>
                             <td className="col-1">
-                                <Form.Control id={`${item._id}quantidade`}
-                                    name="quantidade"
-                                    onChange={alteraDadosItem}
-                                    value={item.quantidade}
-                                    isInvalid={!!erros.quantidade}
-                                    readOnly
-                                />
+                                {item.quantidade}
                             </td>
                             <td className="col-1">
-                                <Form.Control id={`${item._id}locacao`}
-                                    name="locacao"
-                                    onChange={alteraDadosItem}
-                                    value={item.locacao}
-                                    isInvalid={!!erros.locacao}
-                                    readOnly
-                                />
+                                {item.locacao}
                             </td>
                             <td className="col-1">
-                                <Button id={`${item._id}edit`} className="mx-1" variant="outline-primary" title="Editar o registro"
-                                    onClick={() => editaItem(true, item)}>
+                                <Button className="mx-1" variant="outline-primary" title="Editar o registro"
+                                    onClick={() => {
+                                        setItem(item)
+                                        setConfirmaEdicao(true)
+                                    }}>
                                     <MdModeEdit />
                                 </Button>
-                                <Button id={`${item._id}save`} className="mx-1" variant ='outline-success' title="Salva o registro"
-                                    onClick={() => editaItem(false, item)} hidden>
-                                     <MdAssignmentTurnedIn/>   
-                                    </Button>
-                                            
-                                    <Button className="mx-1" variant="outline-danger" title="Apagar o registro"
+                                <Button className="mx-1" variant="outline-danger" title="Apagar o registro"
                                     onClick={() => {
                                         setItem(item)
                                         setConfirmaExclusao(true)
@@ -149,13 +136,122 @@ const Items = () => {
                 </tbody>
             </Table>
             <Row className="justify-content-md-center">
-                <Button className="col-2" variant="primary" type="submit" title="Novo" href="#cadastra-items">
+                <Button className="col-2" variant="primary" type="submit" title="Novo" onClick={() => {
+                    setItem(valorInicial)
+                    setConfirmaEdicao(true)
+                }}>
                     Novo
                 </Button>
             </Row>
-
+            <Modal animation={false} show={confirmaEdicao} onHide={() => setConfirmaEdicao(false)}>
+                <Modal.Header>
+                    <Modal.Title>Edição</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="x">
+                            <Form.Label>X</Form.Label>
+                            <FormControl
+                                name="x"
+                                placeHolder="Ex: 300040"
+                                onChange={alteraDadosItem}
+                                value={x}
+                                isInvalid={!!erros.x}
+                            />
+                            <Form.Control.Feedback type='invalid'>
+                                {erros.x}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} controlId="quantidade">
+                            <Form.Label>Quantidade</Form.Label>
+                            <Form.Control
+                                name="quantidade"
+                                type="number"
+                                onChange={alteraDadosItem}
+                                value={quantidade}
+                                isInvalid={!!erros.quantidade}
+                            />
+                            <Form.Control.Feedback type='invalid'>
+                                {erros.quantidade}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} controlId="locacao">
+                            <Form.Label>Locação</Form.Label>
+                            <Form.Control
+                                name="locacao"
+                                onChange={alteraDadosItem}
+                                value={locacao}
+                                isInvalid={!!erros.locacao}
+                            />
+                            <Form.Control.Feedback type='invalid'>
+                                {erros.locacao}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group controlId="descricao">
+                            <Form.Label>Descrição</Form.Label>
+                            <Form.Control
+                                name="descricao"
+                                placeholder="Ex: Switch Dell"
+                                onChange={alteraDadosItem}
+                                value={descricao}
+                                isInvalid={!!erros.descricao}
+                            />
+                            <Form.Control.Feedback type='invalid'>
+                                {erros.descricao}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="danger" onClick={() => setConfirmaEdicao(!confirmaEdicao)}>
+                        ❌Cancelar
+                            </Button>
+                    <Button variant="success" disabled={x.length  < 3 || descricao.length  < 5 || quantidade.length  < 0 || locacao.length < 3}
+                        onClick={(e) => {
+                            setConfirmaEdicao(!confirmaEdicao)
+                            salvarItem(e)
+                        }}>
+                        ✔️Confirmar
+                            </Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal animation={false} show={confirmaExclusao} onHide={() => setConfirmaExclusao(false)}>
+                <Modal.Header>
+                    <Modal.Title>Confirmação da Exclusão</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Confirma a exclusão da item selecionada?
+                    </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="danger" onClick={() => setConfirmaExclusao(!confirmaExclusao)}>
+                        ❌Cancelar
+                            </Button>
+                    <Button variant="success"
+                        onClick={() => {
+                            setConfirmaExclusao(!confirmaExclusao)
+                            excluirItem()
+                        }}>
+                        ✔️Confirmar
+                            </Button>
+                </Modal.Footer>
+            </Modal>
+            <Toast
+                onClose={() => setAviso('')}
+                show={aviso.length > 0}
+                animation={false}
+                delay={2000}
+                autohide
+                className="bg-success"
+                style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10
+                }}>
+                <Toast.Header >Aviso</Toast.Header>
+                <Toast.Body >{aviso}</Toast.Body>
+            </Toast>
             <Rodape />
-        </Container>
+        </Container >
     )
 }
 
