@@ -8,10 +8,10 @@ import { MdArchive, } from "react-icons/md";
 const Cabecalho = () => {
   return (
     <Navbar bg="dark" variant="dark">
-      <Navbar.Brand href="#">&nbsp;<MdArchive/> LocaInfra</Navbar.Brand>
+      <Navbar.Brand href="#items">&nbsp;<MdArchive/> LocaInfra</Navbar.Brand>
       <Nav classname="mr-auto"defaultActiveKey="#">
         <Nav.Item>
-          <Nav.Link href="#">Itens</Nav.Link>
+          <Nav.Link href="#items">Itens</Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link href="#locacaos">Locações</Nav.Link>
