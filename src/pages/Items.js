@@ -64,7 +64,7 @@ const Items = () => {
                 setItem(valorInicial) //limpa os campos
                 obterItems()
             }).catch(function (error) {
-                console.error(`Erro ao salvar a item: ${error.message}`)
+                console.error(`Erro ao salvar o item: ${error.message}`)
             })
     }
 
@@ -153,7 +153,7 @@ const Items = () => {
                             <Form.Label>X</Form.Label>
                             <FormControl
                                 name="x"
-                                placeHolder="Ex: 300040"
+                                placeHolder="Min 3 dig."
                                 onChange={alteraDadosItem}
                                 value={x}
                                 isInvalid={!!erros.x}
@@ -167,6 +167,7 @@ const Items = () => {
                             <Form.Control
                                 name="quantidade"
                                 type="number"
+                                placeholder="Maior que 0"
                                 onChange={alteraDadosItem}
                                 value={quantidade}
                                 isInvalid={!!erros.quantidade}
@@ -179,6 +180,7 @@ const Items = () => {
                             <Form.Label>Locação</Form.Label>
                             <Form.Control
                                 name="locacao"
+                                placeholder="Min 3 dig."
                                 onChange={alteraDadosItem}
                                 value={locacao}
                                 isInvalid={!!erros.locacao}
@@ -191,7 +193,7 @@ const Items = () => {
                             <Form.Label>Descrição</Form.Label>
                             <Form.Control
                                 name="descricao"
-                                placeholder="Ex: Switch Dell"
+                                placeholder="Min 5 dig."
                                 onChange={alteraDadosItem}
                                 value={descricao}
                                 isInvalid={!!erros.descricao}
@@ -206,7 +208,7 @@ const Items = () => {
                     <Button variant="danger" onClick={() => setConfirmaEdicao(!confirmaEdicao)}>
                         ❌Cancelar
                             </Button>
-                    <Button variant="success" disabled={x.length  < 3 || descricao.length  < 5 || quantidade.length  < 0 || locacao.length < 3}
+                    <Button variant="success" disabled={x.length  < 3 || descricao.length  < 5 || quantidade  < 0 || locacao.length < 3}
                         onClick={(e) => {
                             setConfirmaEdicao(!confirmaEdicao)
                             salvarItem(e)
